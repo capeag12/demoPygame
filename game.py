@@ -12,6 +12,21 @@ class Juego:
         self.screenHeight = height
         self.bateRect = pygame.Rect(self.screenWidth/2,self.screenHeight-30, 200, 20)
         self.ballRect = pygame.Rect(self.screenWidth/2,self.screenHeight/2, 40,40)
+        self.listaLadrillo = []
+        self.dimensionesLadrillo = [self.screenWidth/12, self.screenHeight/12]
+
+        y = 10
+        for i in range(3):
+            filaLadrillo = []
+            x = 10
+            for j in range(10):
+                filaLadrillo.append(pygame.Rect(x,y,self.dimensionesLadrillo[0],self.dimensionesLadrillo[1]))
+                x=x+self.dimensionesLadrillo[0]+10
+            self.listaLadrillo.append(filaLadrillo)
+            y = y+self.dimensionesLadrillo[1]+10
+
+        print()
+
 
 
     def guardarCoordenada(self):
@@ -39,26 +54,39 @@ class Juego:
             if self.ballRect.top < 0:
                 speed[1] = -speed[1]
             if pygame.Rect.colliderect(self.bateRect,self.ballRect)  :
-                speed[0] = -random.randint(3,6)
+                speed[0] = speed[0]
                 speed[1] = -random.randint(3,6)
             if self.ballRect.bottom > ventana.get_height():
                 texto = fuente.render("Has perdido",True, Colores.Azul)
                 ventana.blit(texto, (self.screenWidth/2, self.screenHeight/2))
+            if len(self.listaLadrillo)==0:
+                texto = fuente.render("Has ganado", True, (234,23,156))
+                ventana.blit(texto, (self.screenWidth / 2, self.screenHeight / 2))
 
 
 
             pygame.draw.rect(ventana, Colores.ROJO, self.bateRect)
             pygame.draw.circle(ventana, Colores.ROJO, (self.ballRect.left+(self.ballRect.width/2), self.ballRect.top+(self.ballRect.width/2)),self.ballRect.width/2)
+
+            for i in self.listaLadrillo:
+                for j in i:
+                    pygame.draw.rect(ventana, Colores.Azul, j)
+                    if pygame.Rect.colliderect(self.ballRect, j):
+                        speed[0] = speed[0]
+                        speed[1] = -speed[1]
+                        i.remove(j)
+
+
             for i in self.listaCirculos:
                 pygame.draw.circle(ventana, (255, 6, 67), i, 20)
 
             key = pygame.key.get_pressed()
             if key[pygame.K_LEFT]:
                 if self.bateRect.left >= 0:
-                    self.bateRect = self.bateRect.move(-2, 0)
+                    self.bateRect = self.bateRect.move(-5, 0)
             if key[pygame.K_RIGHT]:
                 if self.bateRect.right<= ventana.get_width():
-                    self.bateRect = self.bateRect.move(2, 0)
+                    self.bateRect = self.bateRect.move(5, 0)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -68,7 +96,6 @@ class Juego:
                     #self.guardarCoordenada()
 
                     print(self.ballRect)
-
 
 
 
